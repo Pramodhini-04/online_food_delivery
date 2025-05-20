@@ -1,0 +1,324 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Orders</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #ffffff;
+            color: #333;
+            margin: 0;
+            padding: 2rem;
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 2rem;
+            color: #fc8019;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .home-button {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .container {
+            background: #fff;
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 900px;
+            margin: auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            text-align: center;
+            color: #fc8019;
+            margin-bottom: 2rem;
+        }
+
+        .order-card {
+            border: 1px solid #eee;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .order-info {
+            flex: 1;
+        }
+
+        .order-summary {
+            text-align: right;
+            min-width: 160px;
+        }
+
+        .order-summary p {
+            margin: 0.5rem 0;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .no-orders {
+            text-align: center;
+            font-size: 1.1rem;
+            color: #666;
+        }
+
+        .order-actions {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.6rem;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: #fc8019;
+            color: white;
+            border: none;
+        }
+
+        .btn-secondary {
+            background-color: #ccc;
+            color: white;
+            border: none;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .cancel-btn {
+            background-color: #e74c3c;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .cancel-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .quantity-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .quantity-controls button {
+            padding: 0.4rem 1rem;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            margin: 0 5px;
+            cursor: pointer;
+        }
+
+        .quantity-controls input {
+            width: 50px;
+            text-align: center;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        .total-price {
+            text-align: right;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 2rem;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: #fc8019;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .top-bar a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+    </style>
+</head>
+<body>
+
+    <div class="logo">🍴 DESI-DINE</div>
+
+    <div class="top-bar">
+        <a href="{% url 'welcome' %}">← Back to Home</a>
+        <span>🍴 DESI-DINE</span>
+    </div>
+
+    <div class="container">
+        <h1>Your Cart, {{ username }}</h1>
+
+        {% if orders %}
+            <div id="restaurant-info" data-first-restaurant="{{ orders.0.dish.restaurant.id }}">
+                <!-- Store first restaurant ID for JS validation -->
+            </div>
+
+            {% for order in orders %}
+            <div class="order-card" id="order-{{ order.id }}" data-restaurant-id="{{ order.dish.restaurant.id }}">
+                <div class="order-info">
+                    <p><strong>Dish:</strong> {{ order.dish.name }}</p>
+                    <p><strong>Description:</strong> {{ order.dish.description }}</p>
+                    <p><strong>Restaurant:</strong> {{ order.dish.restaurant.name }}</p>
+                    <p><strong>Category:</strong> {{ order.dish.category.name }}</p>
+                    <p><strong>Unit Price:</strong> ₹{{ order.dish.price }}</p>
+                    <p><strong>Available Limit:</strong> {{ order.dish.limit }}</p>
+                </div>
+                <div class="order-summary">
+                    <div class="quantity-controls">
+                        <button class="decrement-btn" data-order-id="{{ order.id }}">-</button>
+                        <input type="number" class="quantity-input" value="{{ order.quantity }}" readonly>
+                        <button class="increment-btn" data-order-id="{{ order.id }}">+</button>
+                    </div>
+                    <p><strong>Total:</strong> ₹<span class="order-total">{{ order.price|floatformat:2 }}</span></p>
+                    <button class="cancel-btn" data-order-id="{{ order.id }}">Cancel</button>
+                </div>
+            </div>
+            {% endfor %}
+
+            <div class="total-price">
+                Total Price: ₹{{ total_price|floatformat:2 }}
+            </div>
+        {% else %}
+            <div class="no-orders">
+                <p>You have not placed any orders yet.</p>
+            </div>
+        {% endif %}
+
+        <div class="order-actions">
+            <button id="apply-offers-btn" class="btn btn-secondary">Check Offers</button>
+            <button id="place-order-btn" class="btn btn-primary">Place Order</button>
+        </div>
+    </div>
+
+<script>
+    // Quantity increment and update
+    document.querySelectorAll('.increment-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const orderId = this.dataset.orderId;
+            updateQuantity(orderId, 1);
+        });
+    });
+
+    document.querySelectorAll('.decrement-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const orderId = this.dataset.orderId;
+            updateQuantity(orderId, -1);
+        });
+    });
+
+    function updateQuantity(orderId, change) {
+        const input = document.querySelector(`#order-${orderId} .quantity-input`);
+        const totalSpan = document.querySelector(`#order-${orderId} .order-total`);
+        const limit = parseInt(document.querySelector(`#order-${orderId} .order-info`).querySelector('p:nth-child(6)').textContent.match(/\d+/)[0]); // gets limit from the 6th <p>
+
+        let quantity = parseInt(input.value);
+        let newQty = quantity + change;
+
+        if (newQty <= 0) return;
+
+        if (newQty > limit) {
+            alert(`⚠️ Only ${limit} units are allowed for this dish.`);
+            return;
+        }
+
+        input.value = newQty;
+
+        fetch("{% url 'update_order_quantity' %}", {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `order_id=${orderId}&quantity=${newQty}`,
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                totalSpan.innerText = `₹${data.new_total_price}`;
+                updateTotalPrice();
+            } else {
+                alert(data.message || 'Error updating quantity.');
+            }
+        });
+    }
+
+    function updateTotalPrice() {
+        let total = 0;
+        document.querySelectorAll('.order-total').forEach(span => {
+            total += parseFloat(span.innerText.replace('₹', ''));
+        });
+        document.querySelector('.total-price').innerText = `Total Price: ₹${total.toFixed(2)}`;
+    }
+
+    document.querySelectorAll('.cancel-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const orderId = this.dataset.orderId;
+            if (confirm('Are you sure you want to remove this dish from your orders?')) {
+                fetch("{% url 'cancel_order' %}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `order_id=${orderId}`,
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        document.getElementById(`order-${orderId}`).remove();
+                        alert('Dish removed successfully.');
+                        updateTotalPrice();
+                    } else {
+                        alert('Failed to remove dish.');
+                    }
+                });
+            }
+        });
+    });
+
+    // Validate restaurant consistency before placing order
+    document.getElementById('place-order-btn').addEventListener('click', function () {
+        const firstRestaurant = document.getElementById('restaurant-info').dataset.firstRestaurant;
+        const allOrders = document.querySelectorAll('.order-card');
+
+        for (let i = 0; i < allOrders.length; i++) {
+            const restId = allOrders[i].dataset.restaurantId;
+            if (restId !== firstRestaurant) {
+                alert("⚠️ Can't place order from different restaurants. Please order from one restaurant at a time.");
+                return;
+            }
+        }
+
+        // If all restaurants are same, proceed
+        window.location.href = '{% url "submit_order" %}';
+    });
+</script>
+</body>
+</html>
+

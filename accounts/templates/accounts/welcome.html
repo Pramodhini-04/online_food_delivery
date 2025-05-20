@@ -1,0 +1,335 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>🍴DESI-DINE</title>
+    <link rel="stylesheet" href="{% static 'your_css_file.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: #ffffff;
+        }
+
+        .header {
+            text-align: center;
+            padding: 2rem 1rem;
+            background-color: #ffffff;
+            border-bottom: 1px solid #eee;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #fc8019;
+        }
+
+        .welcome-text {
+            font-size: 1.5rem;
+            color: #333;
+        }
+
+        .header form {
+            display: inline-block;
+            margin: 0 0.5rem;
+        }
+
+        .header input[type="text"] {
+            padding: 0.5rem;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 250px;
+        }
+
+        .header button.btn {
+            padding: 0.5rem 1rem;
+            background-color: #fc8019;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 0.5rem;
+        }
+
+        .header button.btn:hover {
+            background-color: #e67617;
+        }
+
+        .section-block {
+            margin: 2rem 1rem;
+            padding: 1rem;
+            border-top: 2px solid #eee;
+            background-color: #fafafa;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .categories {
+            display: flex;
+            overflow-x: auto;
+            gap: 1rem;
+            padding: 1rem;
+            margin: 0 1rem;
+            scrollbar-width: none;
+        }
+
+        .categories::-webkit-scrollbar {
+            display: none;
+        }
+
+        .category-item {
+            flex: 0 0 auto;
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .category-item img {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            margin-bottom: 0.5rem;
+            object-fit: cover;
+            box-shadow: 0 0 6px rgba(0,0,0,0.1);
+        }
+
+        .restaurant-scroll-container {
+            display: flex;
+            overflow-x: auto;
+            gap: 1rem;
+            padding: 1rem;
+            margin: 0 1rem;
+            scrollbar-width: none;
+        }
+
+        .restaurant-scroll-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .restaurant-card {
+            flex: 0 0 auto;
+            width: 250px;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            transition: transform 0.2s ease;
+        }
+
+        .restaurant-card:hover {
+            transform: scale(1.02);
+        }
+
+        .restaurant-card img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+        }
+
+        .restaurant-info {
+            padding: 1rem;
+        }
+
+        .restaurant-info h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .restaurant-meta {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        .restaurant-meta strong {
+            color: #e44d26;
+        }
+
+        /* Location Filter in Restaurant Section */
+        .location-filter {
+            display: flex;
+            justify-content: center;
+            margin: 1rem 0;
+            gap: 1rem;
+        }
+
+        .location-filter select {
+            padding: 0.5rem;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+        }
+
+        .user {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .user-btn {
+            background-color: transparent;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #ffffff;
+            min-width: 160px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1;
+            border-radius: 8px;
+            padding: 0.5rem;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-content .username {
+            font-weight: bold;
+            color: #333;
+            padding: 0.5rem;
+            text-align: center;
+        }
+
+        .dropdown-content .dropdown-btn {
+            width: 100%;
+            padding: 0.5rem;
+            background-color: #fc8019;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 0.5rem;
+        }
+
+        .dropdown-content .dropdown-btn:hover {
+            background-color: #e67617;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <!-- 🍴 Logo and Welcome -->
+        <div class="header-top">
+            <div class="logo">🍴 DESI-DINE</div>
+            <div class="welcome-text">Welcome, {{ username }}!</div>
+        </div>
+
+        <!-- 👤 User Dropdown -->
+        <div class="user">
+            <div class="dropdown">
+                <button class="user-btn"><i class="bi bi-person"></i></button>
+                <div class="dropdown-content">
+                    <div class="username">👤 {{ username }}</div>
+                    <form action="{% url 'logout' %}" method="post">
+                        {% csrf_token %}
+                        <button class="dropdown-btn" type="submit">Logout</button>
+                    </form>
+                    <form action="{% url 'your_orders' %}">
+                        <button class="dropdown-btn" type="submit">Your Orders</button>
+                    </form>
+                    <form action="{% url 'order_history' %}">
+                        <button class="dropdown-btn" type="submit">Order History</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🔍 Search Bar -->
+        <form method="get" action="{% url 'welcome' %}">
+            <input type="text" name="q" placeholder="Search restaurants or dishes" value="{{ query|default:'' }}" />
+            <button class="btn">Search</button>
+        </form>
+    </div>
+
+    <!-- 🔹 Food Categories Section -->
+    <section class="section-block">
+        <h2 class="section-title">Food Categories</h2>
+        <div class="categories">
+            {% for category in food_categories %}
+                <a href="{% url 'dishes_by_category' category.name %}" style="text-decoration: none; color: inherit;">
+                    <div class="category-item">
+                        <img src="{{ category.image.url }}" alt="{{ category.name }}">
+                        <div>{{ category.name }}</div>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- 🔹 Restaurants Section -->
+    <section class="section-block">
+        <h2 class="section-title">Restaurants</h2>
+
+        <!-- 🌍 Location Filter in Restaurant Section -->
+        <div class="location-filter">
+            <select name="location" id="location-filter">
+                <option value="">All Locations</option>
+                <option value="Chittoor" {% if location == 'Chittoor' %} selected {% endif %}>Chittoor</option>
+                <option value="Hyderabad" {% if location == 'Hyderabad' %} selected {% endif %}>Hyderabad</option>
+                <option value="Chennai" {% if location == 'Chennai' %} selected {% endif %}>Chennai</option>
+            </select>
+            <button class="btn" id="filter-btn">Filter</button>
+        </div>
+
+        <div class="restaurant-scroll-container">
+            {% for restaurant in restaurants %}
+                <a href="{% url 'restaurant_detail' restaurant.name %}" style="text-decoration: none; color: inherit;">
+                    <div class="restaurant-card">
+                        <img src="{{ restaurant.image.url }}" alt="{{ restaurant.name }}">
+                        <div class="restaurant-info">
+                            <h3>{{ restaurant.name }}</h3>
+                            <div class="restaurant-meta">
+                                📍 {{ restaurant.location }}<br>
+                                ⭐ {{ restaurant.rating }} | {{ restaurant.delivery_time }} mins<br>
+                                <strong>{{ restaurant.offer }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    </section>
+
+    {% if message %}
+    <script>
+        window.onload = function() {
+            alert("{{ message }}");
+            window.location.href = "{% url 'welcome' %}";
+        }
+    </script>
+    {% endif %}
+
+    <script>
+        document.getElementById('filter-btn').addEventListener('click', function() {
+            var selectedLocation = document.getElementById('location-filter').value;
+            window.location.href = "{% url 'welcome' %}?location=" + selectedLocation;
+        });
+    </script>
+</body>
+</html>

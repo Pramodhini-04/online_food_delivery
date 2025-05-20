@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ restaurant_id }} Dashboard</title>
+</head>
+<body>
+    <h1>Welcome to the {{ restaurant_id }} Dashboard</h1>
+    <h2>Placed Orders</h2>
+
+    {% if messages %}
+        <ul style="color: red;">
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>User</th>
+                <th>Dishes</th>
+                <th>Address</th>
+                <th>City</th>
+                <th>Zip Code</th>
+                <th>Payment Method</th>
+                <th>Delivery Status</th>
+                <th>Placed On</th>
+                <th>Total Price</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in placed_orders %}
+            <tr>
+                <td>{{ order.id }}</td>
+                <td>{{ order.user.username }}</td>
+                <td>{{ order.dishes }}</td>
+                <td>{{ order.address }}</td>
+                <td>{{ order.city }}</td>
+                <td>{{ order.zip_code }}</td>
+                <td>{{ order.payment_method }}</td>
+                <td>{{ order.delivery_status }}</td>
+                <td>{{ order.placed_on|date:"Y-m-d" }}</td>
+                <td>{{ order.total_price }}</td>
+                <td>
+                    {% if order.delivery_status == "Pending" and order.placed_time|timesince < "5 minutes" %}
+                        <form method="post" action="{% url 'mark_as_delivered' order.id %}" onsubmit="return confirmDeliverable();">
+                            {% csrf_token %}
+                            <button type="submit">Deliver</button>
+                        </form>
+                    {% elif order.delivery_status == "Delivered" %}
+                        <strong>Delivered</strong>
+                    {% else %}
+                        <strong style="color:red;">Not Delivered</strong>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="11">No orders found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <br>
+    <a href="{% url 'restaurant_logout' %}">Logout</a>
+
+    <script>
+        function confirmDeliverable() {
+            return confirm("Are you sure you want to mark this order as Delivered?");
+        }
+    </script>
+</body>
+</html>

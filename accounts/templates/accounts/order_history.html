@@ -1,0 +1,74 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Order History</title>
+    <link rel="stylesheet" href="{% static 'your_css_file.css' %}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 2rem;
+        }
+
+        h2 {
+            text-align: center;
+        }
+                .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: #fc8019;
+            color: white;
+            font-weight: bold;
+        }
+
+        .top-bar a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .order-card {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+            background: #f9f9f9;
+        }
+
+        .order-card strong {
+            color: #fc8019;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <a href="{% url 'welcome' %}">← Back to Home</a>
+        <span>{{ restaurant.name }}</span>
+    </div>
+    <h2>📜 Your Order History</h2>
+
+    {% if orders %}
+        {% for order in orders %}
+            <div class="order-card">
+                <p><strong>Restaurant:</strong> {{ order.restaurant_name }}</p>
+                <p><strong>Dishes:</strong> {{ order.dishes }}</p>
+                <p><strong>Address:</strong> {{ order.address }}, {{ order.city }} - {{ order.zip_code }}</p>
+                <p><strong>Payment Method:</strong> {{ order.payment_method }}</p>
+                <p><strong>Status:</strong> {{ order.delivery_status }}</p>
+                <p><strong>Date:</strong> {{ order.placed_on }}</p>
+
+                {% if order.delivery_status|lower == "delivered" %}
+                    <p style="color: green; font-weight: bold;">✅ Thank you! Enjoy your meal.</p>
+                {% else %}
+                    <p style="color: red; font-weight: bold;">❌ Sorry for the inconvenience. We won't repeat it again.</p>
+                {% endif %}
+            </div>
+
+        {% endfor %}
+    {% else %}
+        <p>You haven't placed any orders yet.</p>
+    {% endif %}
+</body>
+</html>
