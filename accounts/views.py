@@ -123,11 +123,17 @@ def mark_as_delivered(request, order_id):
     messages.success(request, "Order marked as Delivered.")
     return redirect('restaurant_dashboard')
 
-@login_required
+from django.shortcuts import render, redirect
+from django.urls import reverse
+from django.utils.http import urlencode
+from .models import Restaurant, Dish, FoodCategory  # adjust if needed
+
 def welcome_view(request):
     query = request.GET.get('q', '').strip()
     location_filter = request.GET.get('location', '').strip()
+    rating_filter = request.GET.get('rating', '').strip()
 
+    # Handle search query redirection
     if query:
         matched_restaurant = Restaurant.objects.filter(name__iexact=query).first()
         if matched_restaurant:
@@ -143,10 +149,16 @@ def welcome_view(request):
             query_string = urlencode({'dish': matched_dish.name})
             return redirect(f'{base_url}?{query_string}')
 
+    # Start with all restaurants
+    restaurants = Restaurant.objects.all()
+
+    # Apply location filter if selected
     if location_filter:
-        restaurants = Restaurant.objects.filter(location__iexact=location_filter)
-    else:
-        restaurants = Restaurant.objects.all()
+        restaurants = restaurants.filter(location__iexact=location_filter)
+
+    # Apply rating filter if selected
+    if rating_filter and rating_filter.isdigit():
+        restaurants = restaurants.filter(rating__gte=int(rating_filter))
 
     food_categories = FoodCategory.objects.all()
     locations = Restaurant.objects.values_list('location', flat=True).distinct()
@@ -157,7 +169,8 @@ def welcome_view(request):
         'food_categories': food_categories,
         'locations': locations,
         'query': query,
-        'selected_location': location_filter
+        'selected_location': location_filter,
+        'rating': rating_filter,
     })
 
 @login_required
